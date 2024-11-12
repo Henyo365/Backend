@@ -45,7 +45,7 @@ function Signup() {
         localStorage.setItem('loggedInEmail',  userEmail);
 
         // Redirigir automáticamente después del registro
-        navigate('/home')1000),
+        navigate('/home'),1000);
       } else if (error) {
         const details = error?.details[0].message;
         handleError(details);
