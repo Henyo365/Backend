@@ -14,16 +14,14 @@ function Signup() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const copySignupInfo = { ...signupInfo };
-    copySignupInfo[name] = value;
-    setSignupInfo(copySignupInfo);
+    setSignupInfo((prevInfo) => ({ ...prevInfo, [name]: value }));
   };
 
   const handleSignup = async (e) => {
     e.preventDefault();
     const { name, email, password } = signupInfo;
     if (!name || !email || !password) {
-      return handleError('name, email and password are required');
+      return handleError('Name, email, and password are required');
     }
     try {
       const url = 'https://frotned-production.up.railway.app/auth/signup';
@@ -34,83 +32,30 @@ function Signup() {
         },
         body: JSON.stringify(signupInfo),
       });
-    
+
       const result = await response.json();
-      const { success, message, error, jwtToken, name, email } = result;
+      const { success, message, error, jwtToken, name: userName, email: userEmail } = result;
 
       if (success) {
         handleSuccess(message);
+        
+        // Guardar token e información del usuario
         localStorage.setItem('token', jwtToken);
-        localStorage.setItem('name', name);
-        localStorage.setItem('email', email);
-        setTimeout(() => {
-            navigate('/home')
-        })
-      }
-       else if (error) {
+        localStorage.setItem('name', userName);
+        localStorage.setItem('email', userEmail);
+
+        // Redirigir automáticamente después del registro
+        navigate('/home');
+      } else if (error) {
         const details = error?.details[0].message;
         handleError(details);
-      } else if (!success) {
+      } else {
         handleError(message);
       }
-      console.log(result);
     } catch (err) {
-      handleError(err);
+      handleError(err.message);
     }
-  }
-  const [loginInfo, setLoginInfo] = useState({
-    email: '',
-    password: ''
-})
-
-const navigate1 = useNavigate();
-
-const handleChange1 = (e) => {
-    const { name, value } = e.target;
-    console.log(name, value);
-    const copyLoginInfo = { ...loginInfo };
-    copyLoginInfo[name] = value;
-    setLoginInfo(copyLoginInfo);
-}
-
-const handleLogin = async (e) => {
-    e.preventDefault();
-    const { email, password } = loginInfo;
-    if (!email || !password) {
-        return handleError('email and password are required')
-    }
-    try {
-        const url = "https://frotned-production.up.railway.app/products";
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(loginInfo)
-        });
-        const result = await response.json();
-        const { success, message, jwtToken, name, error, email } = result;
-        if (success) {
-            handleSuccess(message);
-            localStorage.setItem('token', jwtToken);
-            localStorage.setItem('loggedInUser', name);
-            localStorage.setItem('loggedInEmail', email);
-            setTimeout(() => {
-                navigate('/home')
-            }, 1000)
-        } else if (error) {
-            const details = error?.details[0].message;
-            handleError(details);
-        } else if (!success) {
-            handleError(message);
-        }
-        console.log(result);
-    } catch (err) {
-        handleError(err);
-    }
-}
-
-
+  };
 
   return (
     <div className="container">
@@ -150,7 +95,7 @@ const handleLogin = async (e) => {
         </div>
         <button type="submit">Signup</button>
         <span>
-          Already have an account ?
+          Already have an account?
           <Link to="/login">Login</Link>
         </span>
       </form>
