@@ -41,8 +41,8 @@ function Signup() {
         
         // Guardar token e información del usuario
         localStorage.setItem('token', jwtToken);
-        localStorage.setItem('name', loggedInUser);
-        localStorage.setItem('email', loggedInEmail);
+        localStorage.setItem('loggedInUser', userName);
+        localStorage.setItem('loggedInEmail',  userEmail);
 
         // Redirigir automáticamente después del registro
         navigate('/home');
