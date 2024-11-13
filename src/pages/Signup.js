@@ -9,7 +9,7 @@ function Signup() {
     email: '',
     password: '',
   });
-
+  const [isSubmitting, setIsSubmitting] = useState(false); // Estado para controlar el envío
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,9 +20,13 @@ function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     const { name, email, password } = signupInfo;
+    
     if (!name || !email || !password) {
       return handleError('Name, email, and password are required');
     }
+    
+    setIsSubmitting(true); // Bloquea el botón mientras se envía la solicitud
+    
     try {
       const url = 'https://frotned-production.up.railway.app/auth/signup';
       const response = await fetch(url, {
@@ -42,12 +46,12 @@ function Signup() {
         // Guardar token e información del usuario
         localStorage.setItem('token', jwtToken);
         localStorage.setItem('loggedInUser', userName);
-        localStorage.setItem('loggedInEmail',  userEmail);
+        localStorage.setItem('loggedInEmail', userEmail);
 
         // Redirigir automáticamente después del registro
         setTimeout(() => {
-                    navigate('/home')
-                }, 1000)
+          navigate('/home');
+        }, 1000);
       } else if (error) {
         const details = error?.details[0].message;
         handleError(details);
@@ -56,13 +60,15 @@ function Signup() {
       }
     } catch (err) {
       handleError(err.message);
+    } finally {
+      setIsSubmitting(false); // Restablece el botón al finalizar
     }
   };
 
   return (
     <div className="container">
       <h1>Signup</h1>
-      <form onSubmit={handleSignup} >
+      <form onSubmit={handleSignup}>
         <div>
           <label htmlFor="name">Name</label>
           <input
@@ -74,7 +80,7 @@ function Signup() {
             value={signupInfo.name}
           />
         </div>
-    
+        
         <div>
           <label htmlFor="email">Email</label>
           <input
@@ -85,6 +91,7 @@ function Signup() {
             value={signupInfo.email}
           />
         </div>
+        
         <div>
           <label htmlFor="password">Password</label>
           <input
@@ -95,7 +102,12 @@ function Signup() {
             value={signupInfo.password}
           />
         </div>
-        <button type="submit">Signup</button>
+
+        {/* Bloquear el botón si isSubmitting es true */}
+        <button type="submit" disabled={isSubmitting}>
+          {isSubmitting ? 'Submitting...' : 'Signup'}
+        </button>
+
         <span>
           Already have an account?
           <Link to="/login">Login</Link>
