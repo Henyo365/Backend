@@ -104,7 +104,14 @@ function Signup() {
         </div>
 
         {/* Bloquear el botón si isSubmitting es true */}
-        <button type="submit" disabled={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          style={{
+            backgroundColor: isSubmitting ? '#ccc' : '#007bff',  // Cambia el color a gris cuando está enviando
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',  // Cambia el cursor cuando está deshabilitado
+          }}
+        >
           {isSubmitting ? 'Submitting...' : 'Signup'}
         </button>
 
@@ -119,3 +126,4 @@ function Signup() {
 }
 
 export default Signup;
+
